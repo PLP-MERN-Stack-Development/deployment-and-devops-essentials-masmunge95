@@ -60,6 +60,14 @@ jobs:
       - name: Run client unit & integration tests
         run: npm test
 
+      - name: Install server dependencies for E2E tests
+        run: npm install --legacy-peer-deps
+        working-directory: ./server
+
+      - name: Start backend server for E2E tests
+        run: npm start &
+        working-directory: ./server
+
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
         with:
@@ -67,7 +75,8 @@ jobs:
           command: npm run cypress:run
           browser: chrome
           start: npm run dev
-          wait-on: 'http://localhost:5173'
+          wait-on: 'http://localhost:5173 && http-get://localhost:5000'
+          wait-on-timeout: 120 # Increase timeout to allow both servers to start
         env:
           # Pass Clerk test user credentials to Cypress tests
           # These secrets need to be created in your GitHub repository settings
