@@ -6,6 +6,11 @@ This version also includes a complete testing setup, allowing developers to clon
 
 💡 If you notice any areas where test coverage could be improved, feel free to contribute! Expanding and refining the test suite helps strengthen the project’s overall quality and maintainability.
 
+## Deployment
+
+- **Frontend (Netlify):** [https://mern-blog-manager-v3.netlify.app/](https://mern-blog-manager-v3.netlify.app/)
+- **Backend (Render):** [https://https://deployment-and-devops-essentials-lyfy.onrender.com/](https://deployment-and-devops-essentials-lyfy.onrender.com/)
+
 ## Features
 
 - **Full CRUD for Posts & Categories**: Create, read, update, and delete posts and their categories through a sleek admin dashboard.
@@ -67,6 +72,16 @@ The project aims for high code coverage across both the client and server, with 
 | Client Coverage Report | Server Coverage Report |
 |:----------------------:|:----------------------:|
 | <img src="docs/coverage/client-coverage.png" alt="Client Test Coverage" height="220" /> | <img src="docs/coverage/server-coverage.png" alt="Server Test Coverage" height="220" /> |
+
+---
+
+### CI/CD Pipeline
+
+This project uses GitHub Actions to automate the testing and deployment process. On every push to the `main` or `develop` branches, the CI pipeline runs all unit, integration, and E2E tests. On a successful push to `main`, the CD pipeline automatically deploys the backend to Render and the frontend to Netlify.
+
+| CI/CD Workflow Overview | Detailed Job View |
+|:-----------------------:|:-----------------:|
+| <img src="docs/cicd/pipeline-overview.png" alt="CI/CD Workflow Overview" height="220" /> | <img src="docs/cicd/job-details.png" alt="Detailed Job View" height="220" /> |
 
 ---
 
@@ -305,6 +320,12 @@ Several features have been implemented to ensure the application is robust, debu
 ### 3. Performance Optimization
 -   **Client-Side Memoization**: To prevent unnecessary re-renders and improve UI responsiveness, presentational components that are part of a list (e.g., `PublicPostCard`, `PostCard`, `CategoryCard`) and common reusable components (e.g., `Button`) are wrapped in `React.memo`. This ensures they only re-render when their props have actually changed.
 -   **Database Query Optimization**: The backend controllers are designed to fetch data efficiently. For example, the public post list uses a single query with `$in` to fetch posts across multiple related categories, reducing database round-trips.
+
+### 4. Error Monitoring with Sentry
+To ensure proactive monitoring and rapid debugging in a production environment, this project is integrated with Sentry.
+
+-   **Backend (Express)**: The Sentry Node.js SDK is initialized in `server.js`. It automatically captures any unhandled exceptions from the API, providing detailed stack traces and request context to help diagnose server-side issues quickly.
+-   **Frontend (React)**: The Sentry React SDK is initialized in `client/src/main.jsx`. It captures runtime errors that occur in the user's browser. With features like **Session Replay**, developers can watch a video-like reproduction of the user's session leading up to an error, providing invaluable context for debugging UI bugs. The `Sentry.ErrorBoundary` component is also used to gracefully handle rendering errors and prevent the entire application from crashing.
 
 ---
 

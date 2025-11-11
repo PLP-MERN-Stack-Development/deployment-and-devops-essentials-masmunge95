@@ -1,6 +1,6 @@
 # .github/workflows/ci.yml
 
-name: MERN Blog CI
+name: MERN Blog CI/CD
 
 on:
   push:
@@ -61,3 +61,40 @@ jobs:
           browser: chrome
           start: npm run dev
           wait-on: 'http://localhost:5173'
+
+  deploy-backend:
+    name: Deploy Backend to Render
+    runs-on: ubuntu-latest
+    # This job runs only on pushes to the main branch
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # This job depends on the backend tests passing successfully
+    needs: backend-tests
+    steps:
+      - name: Trigger Render Deploy Hook
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+
+  deploy-frontend:
+    name: Deploy Frontend to Netlify
+    runs-on: ubuntu-latest
+    # This job runs only on pushes to the main branch
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # This job depends on the frontend tests passing successfully
+    needs: frontend-tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v3.0
+        with:
+          publish-dir: './client/dist'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy from GitHub Actions: ${{ github.event.head_commit.message }}"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
