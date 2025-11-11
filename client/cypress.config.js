@@ -1,13 +1,13 @@
 import { defineConfig } from 'cypress';
 // Import the named export from @clerk/backend that is actually available
 import { createClerkClient } from '@clerk/backend';
-import { addMatchImageSnapshotPlugin } from 'cypress-image-snapshot/plugin.js';
+import { addMatchImageSnapshotPlugin } from '@simonsmith/cypress-image-snapshot/plugin';
 
 export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:5173',
     setupNodeEvents(on, config) {
-      addMatchImageSnapshotPlugin(on, config);
+      addMatchImageSnapshotPlugin(on);
       on('task', {
         'clerk:createToken': async (userId) => {
         // This task will now use the Clerk client to perform a programmatic sign-in
