@@ -84,6 +84,15 @@ jobs:
           CLERK_TEST_VIEWER_PASSWORD: ${{ secrets.CLERK_TEST_VIEWER_PASSWORD }}
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
 
+      - name: Upload server logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-logs
+          path: |
+            server/server.log
+            client/client.log
+
+
 
   deploy-backend:
     name: Deploy Backend to Render
