@@ -75,7 +75,7 @@ jobs:
           command: npm run cypress:run
           browser: chrome
           start: npm run dev
-          wait-on: 'http://localhost:5173 && http-get://localhost:5000'
+          wait-on: 'http://localhost:5173'
           wait-on-timeout: 120 # Increase timeout to allow both servers to start
         env:
           # Pass Clerk test user credentials to Cypress tests
