@@ -61,7 +61,7 @@ jobs:
 
       - name: Start backend server
         run: |
-          cd server
+          cd ../server
           nohup npm run dev > server.log 2>&1 &
           echo "Backend server started"
 
