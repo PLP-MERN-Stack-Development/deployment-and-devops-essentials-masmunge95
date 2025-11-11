@@ -5,7 +5,7 @@
 # Since this file is in the 'client' directory, paths are relative to it.
 [build]
   # The command to build the frontend.
-  command = "npm run build --prefix client"
+  command = "npm run build"
   # The directory where the built static files are located.
   publish = "client/dist"
   # The base directory for the build, where package.json is located.
