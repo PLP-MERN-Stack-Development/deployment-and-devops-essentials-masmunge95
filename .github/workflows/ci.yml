@@ -67,7 +67,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           # We run from the root now to access both client and server
-          working-directory: .
+          working-directory: ./client
           command: npm run cypress:run
           browser: chrome
           # Use the new script to start both servers
