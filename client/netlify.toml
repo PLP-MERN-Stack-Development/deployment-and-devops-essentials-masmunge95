@@ -7,9 +7,7 @@
   # The command to build the frontend.
   command = "npm run build"
   # The directory where the built static files are located.
-  publish = "client/dist"
-  # The base directory for the build, where package.json is located.
-  base = "client"
+  publish = "dist"
 
 # --- Redirects and Rewrites ---
 
