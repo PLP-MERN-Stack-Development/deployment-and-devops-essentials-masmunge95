@@ -47,6 +47,9 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Configure npm to use legacy peer dependencies
+        run: npm config set legacy-peer-deps true
+
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
@@ -62,7 +65,11 @@ jobs:
           start: npm run dev
           wait-on: 'http://localhost:5173'
         env:
-          NODE_OPTIONS: '--legacy-peer-deps'
+          # Pass Clerk test user credentials to Cypress tests
+          CYPRESS_CLERK_TEST_USER_EMAIL: ${{ secrets.CLERK_TEST_USER_EMAIL }}
+          CYPRESS_CLERK_TEST_USER_PASSWORD: ${{ secrets.CLERK_TEST_USER_PASSWORD }}
+          CYPRESS_CLERK_TEST_VIEWER_EMAIL: ${{ secrets.CLERK_TEST_VIEWER_EMAIL }}
+          CYPRESS_CLERK_TEST_VIEWER_PASSWORD: ${{ secrets.CLERK_TEST_VIEWER_PASSWORD }}
 
   deploy-backend:
     name: Deploy Backend to Render
@@ -95,6 +102,8 @@ jobs:
         uses: nwtgck/actions-netlify@v3.0
         with:
           publish-dir: './client/dist'
+          build-command: 'npm run build --prefix client'
+          build-env: 'NPM_FLAGS=--legacy-peer-deps'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Deploy from GitHub Actions: ${{ github.event.head_commit.message }}"
         env:
