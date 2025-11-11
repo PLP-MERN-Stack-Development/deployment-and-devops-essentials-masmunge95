@@ -66,8 +66,10 @@ jobs:
 
       # Start the backend server as a background process
       - name: Start backend server for E2E tests
-        run: npm run dev &
+        run: npm run dev
         working-directory: ./server
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
 
       # Run the Cypress tests
       - name: Run Cypress E2E tests
