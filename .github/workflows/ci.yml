@@ -70,6 +70,8 @@ jobs:
         working-directory: ./server
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
+          ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
+        
 
       # Run the Cypress tests
       - name: Run Cypress E2E tests
