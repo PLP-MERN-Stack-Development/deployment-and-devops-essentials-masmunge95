@@ -59,15 +59,21 @@ jobs:
       - name: Run client unit & integration tests
         run: npm test
 
+      - name: Start backend server
+        run: |
+          cd server
+          nohup npm run dev > server.log 2>&1 &
+          echo "Backend server started"
+
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
         with:
           working-directory: client
-          start: |
-            cd ../server && npm run dev &
-            npm run dev
+          start: npm run dev
           wait-on: 'http://localhost:5000,http://localhost:5173'
           wait-on-timeout: 180
+          browser: chrome
+          command: npm run cypress:run
         env:
           CYPRESS_CLERK_TEST_USER_EMAIL: ${{ secrets.CLERK_TEST_USER_EMAIL }}
           CYPRESS_CLERK_TEST_USER_PASSWORD: ${{ secrets.CLERK_TEST_USER_PASSWORD }}
