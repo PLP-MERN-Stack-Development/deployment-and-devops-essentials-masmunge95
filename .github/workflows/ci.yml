@@ -59,35 +59,31 @@ jobs:
       - name: Run client unit & integration tests
         run: npm test
 
-      - name: Install server dependencies for E2E tests
-        run: npm install --legacy-peer-deps
-        working-directory: ./server
-
-      - name: Start backend server for E2E tests
-        run: |
-          npm start &
-        working-directory: ./server
-
-      - name: Wait for backend API to be ready
-        run: |
-          npm install -g wait-on
-          wait-on --timeout 120000 http://localhost:5000/api/categories http://localhost:5000/api/posts?page=1&limit=100
-
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
         with:
           working-directory: client
-          command: npm run cypress:run
-          browser: chrome
-          start: npm run dev
-          wait-on: 'http://localhost:5173,http://localhost:5000'
-          wait-on-timeout: 120
+          start: |
+            cd ../server && npm run dev &
+            npm run dev
+          wait-on: 'http://localhost:5000,http://localhost:5173'
+          wait-on-timeout: 180
         env:
           CYPRESS_CLERK_TEST_USER_EMAIL: ${{ secrets.CLERK_TEST_USER_EMAIL }}
           CYPRESS_CLERK_TEST_USER_PASSWORD: ${{ secrets.CLERK_TEST_USER_PASSWORD }}
           CYPRESS_CLERK_TEST_VIEWER_EMAIL: ${{ secrets.CLERK_TEST_VIEWER_EMAIL }}
           CYPRESS_CLERK_TEST_VIEWER_PASSWORD: ${{ secrets.CLERK_TEST_VIEWER_PASSWORD }}
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+
+        # 📊 Upload coverage reports (optional)
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            server/coverage
+            client/coverage
 
   deploy-backend:
     name: Deploy Backend to Render
