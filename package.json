@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "server": "cd server && cross-env MONGO_URI=$MONGO_URI ALLOWED_ORIGINS=$ALLOWED_ORIGINS npm run dev",
+    "client": "cd client && npm run dev",
+    "start:servers": "concurrently \"npm:server\" \"npm:client\"",
+    "cy:e2e": "start-server-and-test start:servers http://localhost:5173 npm run cypress:run --prefix client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "start-server-and-test": "^2.1.2"
+  }
+}
