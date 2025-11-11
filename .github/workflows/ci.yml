@@ -62,6 +62,8 @@ jobs:
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
         with:
+          # Skip automatic dependency installation
+          install: false
           # Run from the root to easily access both client and server
           working-directory: .
           start: |
