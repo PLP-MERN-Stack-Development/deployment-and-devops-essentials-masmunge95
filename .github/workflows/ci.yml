@@ -72,7 +72,7 @@ jobs:
       - name: Wait for backend API to be ready
         run: |
           npm install -g wait-on
-          wait-on http://localhost:5000/api/health --timeout 120000
+          wait-on http://localhost:5000/api/categories http://localhost:5000/api/posts?page=1&limit=100 --timeout 120000
 
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
