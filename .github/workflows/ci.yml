@@ -73,7 +73,7 @@ jobs:
           # Use the new script to start both servers
           start: npm run start:ci
           # Wait for both frontend and backend to be ready
-          wait-on: 'http://localhost:5173 && http://localhost:5000'
+          wait-on: 'http://localhost:5173,http://localhost:5000'
           wait-on-timeout: 120 # Increase timeout to allow both servers to start
         env:
           # Pass Clerk test user credentials to Cypress tests
