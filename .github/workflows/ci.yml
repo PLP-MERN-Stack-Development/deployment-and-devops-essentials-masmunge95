@@ -68,6 +68,11 @@ jobs:
         run: npm start &
         working-directory: ./server
 
+      - name: Wait for backend API to be ready
+        run: |
+            npm install -g wait-on
+            wait-on http://localhost:5000/api/categories http://localhost:5000/api/posts?page=1&limit=100
+
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
         with:
