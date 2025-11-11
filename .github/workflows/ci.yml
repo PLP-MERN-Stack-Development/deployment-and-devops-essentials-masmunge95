@@ -23,7 +23,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20.19.0'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
@@ -45,7 +47,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20.19.0'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
 
       - name: Configure npm to use legacy peer dependencies
         run: npm config set legacy-peer-deps true
@@ -64,12 +68,6 @@ jobs:
           browser: chrome
           start: npm run dev
           wait-on: 'http://localhost:5173'
-        env:
-          # Pass Clerk test user credentials to Cypress tests
-          CYPRESS_CLERK_TEST_USER_EMAIL: ${{ secrets.CLERK_TEST_USER_EMAIL }}
-          CYPRESS_CLERK_TEST_USER_PASSWORD: ${{ secrets.CLERK_TEST_USER_PASSWORD }}
-          CYPRESS_CLERK_TEST_VIEWER_EMAIL: ${{ secrets.CLERK_TEST_VIEWER_EMAIL }}
-          CYPRESS_CLERK_TEST_VIEWER_PASSWORD: ${{ secrets.CLERK_TEST_VIEWER_PASSWORD }}
 
   deploy-backend:
     name: Deploy Backend to Render
@@ -96,7 +94,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20.19.0'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
 
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3.0
