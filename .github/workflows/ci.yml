@@ -15,7 +15,6 @@ jobs:
     defaults:
       run:
         working-directory: ./server
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -39,7 +38,6 @@ jobs:
     defaults:
       run:
         working-directory: ./client
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -60,31 +58,21 @@ jobs:
       - name: Run client unit & integration tests
         run: npm test
 
-      - name: Install server dependencies for E2E tests
-        run: npm install --legacy-peer-deps
-        working-directory: ./server
-
-      - name: Start backend server for E2E tests
-        run: npm start &
-        working-directory: ./server
-
-      - name: Wait for backend API to be ready
-        run: |
-            npm install -g wait-on
-            wait-on http://localhost:5000/api/categories http://localhost:5000/api/posts?page=1&limit=100
-
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
         with:
           working-directory: client
           command: npm run cypress:run
           browser: chrome
-          start: npm run dev
-          wait-on: 'http://localhost:5173'
-          wait-on-timeout: 120 # Increase timeout to allow both servers to start
+          # Start the backend and wait for it to be ready
+          start: |
+            cd ../server
+            npm install --legacy-peer-deps
+            npm start
+          wait-on: 'http://localhost:5000/api/health'
+          wait-on-timeout: 120
         env:
           # Pass Clerk test user credentials to Cypress tests
-          # These secrets need to be created in your GitHub repository settings
           CYPRESS_CLERK_TEST_USER_EMAIL: ${{ secrets.CLERK_TEST_USER_EMAIL }}
           CYPRESS_CLERK_TEST_USER_PASSWORD: ${{ secrets.CLERK_TEST_USER_PASSWORD }}
           CYPRESS_CLERK_TEST_VIEWER_EMAIL: ${{ secrets.CLERK_TEST_VIEWER_EMAIL }}
@@ -95,9 +83,7 @@ jobs:
     name: Deploy Backend to Render
     runs-on: ubuntu-latest
     environment: production
-    # This job runs only on pushes to the main branch
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    # This job depends on the backend tests passing successfully
     needs: backend-tests
     steps:
       - name: Trigger Render Deploy Hook
@@ -107,9 +93,7 @@ jobs:
     name: Deploy Frontend to Netlify
     runs-on: ubuntu-latest
     environment: production
-    # This job runs only on pushes to the main branch
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    # This job depends on the frontend tests passing successfully
     needs: frontend-tests
     steps:
       - name: Checkout code
