@@ -59,43 +59,38 @@ jobs:
       - name: Run client unit & integration tests
         run: npm test
 
+      - name: Install server dependencies for E2E tests
+        run: npm install --legacy-peer-deps
+        working-directory: ./server
+
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
         with:
-          # Skip automatic dependency installation
-          install: false
-          # Run from the root to easily access both client and server
+          # We run from the root now to access both client and server
           working-directory: .
-          start: |
-            npm run dev --prefix server &
-            npm run dev --prefix client
-          wait-on: 'http://localhost:5000,http://localhost:5173'
-          wait-on-timeout: 180
-          browser: chrome
           command: npm run cypress:run
+          browser: chrome
+          # Use the new script to start both servers
+          start: npm run start:ci
+          # Wait for both frontend and backend to be ready
+          wait-on: 'http://localhost:5173 && http://localhost:5000'
+          wait-on-timeout: 120 # Increase timeout to allow both servers to start
         env:
+          # Pass Clerk test user credentials to Cypress tests
+          # These secrets need to be created in your GitHub repository settings
           CYPRESS_CLERK_TEST_USER_EMAIL: ${{ secrets.CLERK_TEST_USER_EMAIL }}
           CYPRESS_CLERK_TEST_USER_PASSWORD: ${{ secrets.CLERK_TEST_USER_PASSWORD }}
           CYPRESS_CLERK_TEST_VIEWER_EMAIL: ${{ secrets.CLERK_TEST_VIEWER_EMAIL }}
           CYPRESS_CLERK_TEST_VIEWER_PASSWORD: ${{ secrets.CLERK_TEST_VIEWER_PASSWORD }}
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
 
-
-        # 📊 Upload coverage reports (optional)
-      - name: Upload coverage reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-reports
-          path: |
-            server/coverage
-            client/coverage
-
   deploy-backend:
     name: Deploy Backend to Render
     runs-on: ubuntu-latest
     environment: production
+    # This job runs only on pushes to the main branch
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # This job depends on the backend tests passing successfully
     needs: backend-tests
     steps:
       - name: Trigger Render Deploy Hook
@@ -105,7 +100,9 @@ jobs:
     name: Deploy Frontend to Netlify
     runs-on: ubuntu-latest
     environment: production
+    # This job runs only on pushes to the main branch
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # This job depends on the frontend tests passing successfully
     needs: frontend-tests
     steps:
       - name: Checkout code
