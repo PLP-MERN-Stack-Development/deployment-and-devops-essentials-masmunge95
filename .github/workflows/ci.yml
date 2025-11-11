@@ -15,6 +15,7 @@ jobs:
     defaults:
       run:
         working-directory: ./server
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,6 +39,7 @@ jobs:
     defaults:
       run:
         working-directory: ./client
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -58,21 +60,30 @@ jobs:
       - name: Run client unit & integration tests
         run: npm test
 
+      - name: Install server dependencies for E2E tests
+        run: npm install --legacy-peer-deps
+        working-directory: ./server
+
+      - name: Start backend server for E2E tests
+        run: |
+          npm start &
+        working-directory: ./server
+
+      - name: Wait for backend API to be ready
+        run: |
+          npm install -g wait-on
+          wait-on http://localhost:5000/api/health --timeout 120000
+
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
         with:
           working-directory: client
           command: npm run cypress:run
           browser: chrome
-          # Start the backend and wait for it to be ready
-          start: |
-            cd ../server
-            npm install --legacy-peer-deps
-            npm start
-          wait-on: 'http://localhost:5000/api/health'
+          start: npm run dev
+          wait-on: 'http://localhost:5173'
           wait-on-timeout: 120
         env:
-          # Pass Clerk test user credentials to Cypress tests
           CYPRESS_CLERK_TEST_USER_EMAIL: ${{ secrets.CLERK_TEST_USER_EMAIL }}
           CYPRESS_CLERK_TEST_USER_PASSWORD: ${{ secrets.CLERK_TEST_USER_PASSWORD }}
           CYPRESS_CLERK_TEST_VIEWER_EMAIL: ${{ secrets.CLERK_TEST_VIEWER_EMAIL }}
