@@ -61,6 +61,8 @@ jobs:
           browser: chrome
           start: npm run dev
           wait-on: 'http://localhost:5173'
+        env:
+          NODE_OPTIONS: '--legacy-peer-deps'
 
   deploy-backend:
     name: Deploy Backend to Render
