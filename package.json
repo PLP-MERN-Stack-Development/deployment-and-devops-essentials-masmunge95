@@ -3,7 +3,8 @@
     "server": "cd server && cross-env MONGO_URI=$MONGO_URI ALLOWED_ORIGINS=$ALLOWED_ORIGINS npm run dev",
     "client": "cd client && npm run dev",
     "start:servers": "concurrently \"npm:server\" \"npm:client\"",
-    "cy:e2e": "start-server-and-test start:servers http://localhost:5173 cy:run"
+    "cy:e2e": "start-server-and-test start:servers http://localhost:5173 cy:run",
+    "cy:run": "cd client && npx cypress run"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
