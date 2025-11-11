@@ -1,10 +1,12 @@
 // server/seed.js
 require('dotenv').config();
 const mongoose = require('mongoose');
-const User = require('./models/User');      // adjust paths to your models
-const Post = require('./models/Post');
-const Category = require('./models/Category');
+const Post = require('./src/models/Post');
+const Category = require('./src/models/Category');
 
+// Since Clerk handles users, we'll use placeholder IDs for seeding purposes.
+const EDITOR_ID = 'user_placeholder_editor_12345';
+const EDITOR_NAME = 'Seeded Editor';
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/mern-blog';
 
 async function seed() {
@@ -16,60 +18,49 @@ async function seed() {
     console.log('Connected to MongoDB for seeding');
 
     // Clear existing data
-    await User.deleteMany({});
     await Post.deleteMany({});
     await Category.deleteMany({});
 
     console.log('Cleared existing data');
 
-    // Seed users
-    const editor = await User.create({
-      name: 'Editor User',
-      email: 'editor@example.com',
-      role: 'editor',
-      password: 'password123', // or hashed if your app requires
-    });
-
-    const viewer = await User.create({
-      name: 'Viewer User',
-      email: 'viewer@example.com',
-      role: 'viewer',
-      password: 'password123',
-    });
-
-    console.log('Seeded users');
-
     // Seed categories
-    const category1 = await Category.create({ name: 'Tech' });
-    const category2 = await Category.create({ name: 'Lifestyle' });
+    const category1 = await Category.create({ name: 'Tech', authorId: EDITOR_ID });
+    const category2 = await Category.create({ name: 'Lifestyle', authorId: EDITOR_ID });
 
     console.log('Seeded categories');
 
     // Seed posts
     await Post.create([
       {
-        title: 'First Post',
-        content: 'Hello world!',
-        author: editor._id,
+        title: 'First Seeded Post',
+        content: 'This is the content of the first post seeded into the database.',
+        author: EDITOR_NAME,
+        authorId: EDITOR_ID,
         category: category1._id,
-        published: true,
+        status: 'published',
+        tags: ['tech', 'getting-started'],
       },
       {
-        title: 'Second Post',
-        content: 'Another post',
-        author: editor._id,
+        title: 'Second Seeded Post',
+        content: 'This is another post, this time about lifestyle.',
+        author: EDITOR_NAME,
+        authorId: EDITOR_ID,
         category: category2._id,
-        published: true,
+        status: 'published',
+        tags: ['lifestyle', 'thoughts'],
       },
     ]);
 
     console.log('Seeded posts');
 
     console.log('Database seeding completed!');
-    process.exit(0);
   } catch (err) {
     console.error('Error seeding database:', err);
     process.exit(1);
+  } finally {
+    await mongoose.disconnect();
+    console.log('Disconnected from MongoDB');
+    process.exit(0);
   }
 }
 
