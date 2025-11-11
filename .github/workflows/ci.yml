@@ -1,5 +1,4 @@
 # .github/workflows/ci.yml
-
 name: MERN Blog CI/CD
 
 on:
@@ -72,7 +71,7 @@ jobs:
       - name: Wait for backend API to be ready
         run: |
           npm install -g wait-on
-          wait-on http://localhost:5000/api/categories http://localhost:5000/api/posts?page=1&limit=100 --timeout 120000
+          wait-on --timeout 120000 http://localhost:5000/api/categories http://localhost:5000/api/posts?page=1&limit=100
 
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
