@@ -68,7 +68,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           working-directory: ./client
-          start: ../start-servers.sh
+          start: ./start-servers.sh
           wait-on: 'http://localhost:5000,http://localhost:5173'
           wait-on-timeout: 180
           browser: chrome
