@@ -17,26 +17,29 @@ async function seed() {
     });
     console.log('Connected to MongoDB for seeding');
 
-    // Clear existing data
-    await Post.deleteMany({});
-    await Category.deleteMany({});
+    // Non-destructively seed categories if they don't exist
+    const techCategory = await Category.findOneAndUpdate(
+      { name: 'Tech', authorId: EDITOR_ID },
+      { $setOnInsert: { name: 'Tech', authorId: EDITOR_ID } },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
 
-    console.log('Cleared existing data');
+    const lifestyleCategory = await Category.findOneAndUpdate(
+      { name: 'Lifestyle', authorId: EDITOR_ID },
+      { $setOnInsert: { name: 'Lifestyle', authorId: EDITOR_ID } },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
 
-    // Seed categories
-    const category1 = await Category.create({ name: 'Tech', authorId: EDITOR_ID });
-    const category2 = await Category.create({ name: 'Lifestyle', authorId: EDITOR_ID });
+    console.log('Categories seeded or already exist.');
 
-    console.log('Seeded categories');
-
-    // Seed posts
-    await Post.create([
+    // Non-destructively seed posts if they don't exist
+    const seedPosts = [
       {
         title: 'First Seeded Post',
         content: 'This is the content of the first post seeded into the database.',
         author: EDITOR_NAME,
         authorId: EDITOR_ID,
-        category: category1._id,
+        category: techCategory._id,
         status: 'published',
         tags: ['tech', 'getting-started'],
       },
@@ -45,13 +48,21 @@ async function seed() {
         content: 'This is another post, this time about lifestyle.',
         author: EDITOR_NAME,
         authorId: EDITOR_ID,
-        category: category2._id,
+        category: lifestyleCategory._id,
         status: 'published',
         tags: ['lifestyle', 'thoughts'],
       },
-    ]);
+    ];
 
-    console.log('Seeded posts');
+    for (const postData of seedPosts) {
+      await Post.findOneAndUpdate(
+        { title: postData.title, authorId: postData.authorId },
+        { $setOnInsert: postData },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
+    }
+
+    console.log('Posts seeded or already exist.');
 
     console.log('Database seeding completed!');
   } catch (err) {
