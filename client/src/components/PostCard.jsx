@@ -39,11 +39,14 @@ const PostCard = ({ post, categories = [], onUpdate, onStatusUpdate, onDelete })
         e.preventDefault();
         setIsSaving(true);
         try {
+            // onUpdate now handles the full async logic, including state updates.
             await onUpdate(post._id, draft);
+            // On success, exit edit mode and clear local previews.
+            setIsEditing(false);
+            setImagePreview(null);
         } finally {
             // Ensure isSaving is reset even if the update fails
             setIsSaving(false);
-            setIsEditing(false);
         }
     };
 
