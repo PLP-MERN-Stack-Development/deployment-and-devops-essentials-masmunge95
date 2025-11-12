@@ -101,40 +101,45 @@ GitHub Actions automates testing and deployment. On every push to `main` or `dev
 
 ## Project Structure 📂
 
+```
 mern-blog-manager/
-├── client/
-│ ├── public/
-│ ├── cypress/
-│ ├── src/
-│ │ ├── assets/
-│ │ ├── components/
-│ │ ├── context/
-│ │ ├── hooks/
-│ │ ├── pages/
-│ │ ├── services/
-│ │ ├── tests/
-│ │ ├── utils/
-│ │ └── App.jsx
-│ ├── package.json
-│ └── vite.config.js
+├── client/                      # React front-end
+│   ├── public/                  # Static files
+│   ├── cypress/                 # E2E and Visual Regression tests
+│   ├── src/                     # React source code
+│   │   ├── assets/              # Logo file directory
+│   │   ├── components/          # Reusable components
+│   │   ├── context/             # React context providers
+│   │   ├── hooks/               # Custom React hooks
+│   │   ├── pages/               # Page components
+│   │   ├── services/            # API services
+│   │   ├── tests/               # Jest tests (Unit & Integration)
+│   │   ├── utils/               # Frontend utility functions
+│   │   └── App.jsx              # Main application component
+│   ├── package.json             # Client dependencies
+│   └── vite.config.js           # Vite configuration
 
-├── server/
-│ ├── mocks/
-│ ├── src/
-│ │ ├── config/
-│ │ ├── controllers/
-│ │ ├── middleware/
-│ │ ├── models/
-│ │ ├── routes/
-│ │ └── utils/
-│ ├── tests/
-│ ├── uploads/
-│ ├── server.js
-│ └── package.json
-├── docs/
-│ └── coverage/
-├── jest.config.js
-└── README.md
+├── server/                      # Express.js back-end
+│   ├── __mocks__/               # Manual mocks for external libraries
+│   ├── src/                     # Server source code
+│   │   ├── config/              # Configuration files
+│   │   ├── controllers/         # Route controllers
+│   │   ├── middleware/          # Custom middleware
+│   │   ├── models/              # Mongoose models
+│   │   ├── routes/              # API routes
+│   │   └── utils/               # Backend utility functions
+│   ├── tests/                   # Jest tests (Unit & Integration)
+│   ├── uploads/                 # File uploads directory
+│   ├── server.js                # Main server file
+│   └── package.json             # Server dependencies
+├── docs/                        # Documentation & reporting
+│   └── coverage/                # Test coverage report screenshots
+|
+├── jest.config.js               # Root Jest configuration for monorepo
+└── README.md                    # Project documentation
+
+```
+
 
 ---
 
