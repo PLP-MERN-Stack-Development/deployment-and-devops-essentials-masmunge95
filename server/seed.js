@@ -11,10 +11,7 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/mern-blog'
 
 async function seed() {
   try {
-    await mongoose.connect(MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(MONGO_URI);
     console.log('Connected to MongoDB for seeding');
 
     // Non-destructively seed categories if they don't exist
@@ -54,15 +51,16 @@ async function seed() {
       },
     ];
 
+    console.log('Recreating seed posts to ensure data integrity and trigger hooks...');
+
     for (const postData of seedPosts) {
-      await Post.findOneAndUpdate(
-        { title: postData.title, authorId: postData.authorId },
-        { $setOnInsert: postData },
-        { upsert: true, new: true, setDefaultsOnInsert: true }
-      );
+      // Delete any existing post with the same title to ensure a clean slate
+      await Post.deleteOne({ title: postData.title, authorId: EDITOR_ID });
+      // Create the post, which allows Mongoose pre-save hooks (like slug generation) to run
+      await Post.create(postData);
     }
 
-    console.log('Posts seeded or already exist.');
+    console.log('Seed posts have been recreated successfully.');
 
     console.log('Database seeding completed!');
   } catch (err) {
