@@ -62,7 +62,10 @@ const PostCard = ({ post, categories = [], onUpdate, onStatusUpdate, onDelete })
         setImagePreview(file ? URL.createObjectURL(file) : null);
     };
 
-    const imageUrl = getFullImageUrl(post.featuredImage);
+    // Use the image preview if it exists (during an edit), otherwise use the post's image.
+    // This ensures the full URL is constructed for deployed environments.
+    const displayImageUrl = imagePreview || getFullImageUrl(post.featuredImage);
+
 
     return (
         <div className="rounded-lg shadow-md p-6" data-post-id={post._id}>
@@ -84,9 +87,9 @@ const PostCard = ({ post, categories = [], onUpdate, onStatusUpdate, onDelete })
                         <p className="text-xs text-gray-500 dark:text-gray-400">
                             By {post.author} on {new Date(post.createdAt).toLocaleDateString()}
                         </p>
-                        {imageUrl && (
+                        {displayImageUrl && (
                             <Link to={`/posts/${post.slug || post._id}`}>
-                                <img src={imageUrl} alt={post.title} className="mt-4 w-full h-48 object-cover rounded-md hover:opacity-90 transition-opacity" />
+                                <img src={displayImageUrl} alt={post.title} className="mt-4 w-full h-48 object-cover rounded-md hover:opacity-90 transition-opacity" />
                             </Link>
                         )}
                         {post.excerpt && <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">{post.excerpt}</p>}
@@ -134,10 +137,10 @@ const PostCard = ({ post, categories = [], onUpdate, onStatusUpdate, onDelete })
                         onChange={handleInputChange}
                         placeholder="Tags (comma-separated, optional)"
                     />
-                    {(imagePreview || imageUrl) && (
+                    {displayImageUrl && (
                         <div className="my-2">
                             <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Image Preview:</p>
-                            <img src={imagePreview || imageUrl} alt="Preview" className="w-full h-48 object-cover rounded-md" />
+                            <img src={displayImageUrl} alt="Preview" className="w-full h-48 object-cover rounded-md" />
                         </div>
                     )}
                     <input

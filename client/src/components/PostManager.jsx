@@ -47,6 +47,9 @@ const PostManager = ({ categories }) => {
       if (postData.author) {
         formData.append('author', postData.author);
       }
+      if (userId) { // Ensure authorId is included
+        formData.append('author', postData.author);
+      }
       if (postData.tags) {
         formData.append('tags', postData.tags); // Send as a comma-separated string
       }

@@ -5,7 +5,7 @@ const Post = require('./src/models/Post');
 const Category = require('./src/models/Category');
 
 // Since Clerk handles users, we'll use placeholder IDs for seeding purposes.
-const EDITOR_ID = 'user_placeholder_editor_12345';
+const EDITOR_ID = 'system-template'; // Standardize on 'system-template' for all seed data
 const EDITOR_NAME = 'Seeded Editor';
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/mern-blog';
 

@@ -42,7 +42,10 @@ export default function PublicPostList() {
           categoryService.getAllCategories(),
         ]);
         const data = postData;
-        const publishedPosts = data.posts.filter(p => p.status === 'published');
+        // Filter for published posts and exclude any created by system/seed scripts
+        // by checking for the standardized 'system-template' authorId.
+        const SYSTEM_TEMPLATE_AUTHOR_ID = 'system-template';
+        const publishedPosts = data.posts.filter(p => p.status === 'published' && p.authorId !== SYSTEM_TEMPLATE_AUTHOR_ID);
         
         // De-duplicate categories by name to ensure the filter dropdown is clean.
         // We use a Map to ensure that we only keep the first occurrence of each category name.
