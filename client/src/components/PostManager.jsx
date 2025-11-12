@@ -75,14 +75,15 @@ const PostManager = ({ categories }) => {
       const postToUpdate = posts.find(p => p._id === id);
       if (!postToUpdate) throw new Error("Post not found for updating.");
 
-      // Optimistically update the UI with all changes.
-      // If a new file is being uploaded, create a temporary local URL for immediate display.
+      // Optimistically update the UI with non-file changes for a responsive feel.
+      // We will handle the image update after the server responds.
       const optimisticUpdates = { ...updates };
       if (updates.featuredImage instanceof File) {
-        optimisticUpdates.featuredImage = URL.createObjectURL(updates.featuredImage);
+        // Create a temporary URL for preview, but don't set it in the main state yet.
+        // The PostCard component will manage its own preview.
+        delete optimisticUpdates.featuredImage;
       }
-      updatePostInState(id, { ...postToUpdate, ...optimisticUpdates });
-
+      updatePostInState(id, { ...postToUpdate, ...optimisticUpdates }); // Apply text-based changes immediately
       // Create FormData to send all updates, including the potential new image file.
       const formData = new FormData();
       Object.keys(updates).forEach(key => {
